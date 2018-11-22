@@ -30,10 +30,14 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#include "reqchannel.h"
+#include "./includes/FIFORequestChannel.h"
+#include "./includes/MQRequestChannel.h"
+#include "./includes/SHMRequestChannel.h"
 #include "BoundedBuffer.h"
 #include "Histogram.h"
 using namespace std;
+
+#define RequestChannel FIFORequestChannel
 
 // Wrapper around request arguments
 struct Request {
@@ -136,7 +140,7 @@ void* worker_thread_function(void* arg) {
 
     Worker* req = (Worker*) arg;
     std::string s = req -> channel_create();
-    RequestChannel* workerChannel = new RequestChannel(s, RequestChannel::CLIENT_SIDE);
+    RequestChannel* workerChannel = new RequestChannel(s, ::CLIENT_SIDE);
 
     // Reading until thread hits 'quit'
     while(true) {
@@ -219,7 +223,7 @@ int main(int argc, char * argv[]) {
         cout << "w == " << w << endl;
         cout << "b == " << b << endl;
 
-        RequestChannel* chan = new RequestChannel("control", RequestChannel::CLIENT_SIDE);
+        RequestChannel* chan = new RequestChannel("control", ::CLIENT_SIDE);
         BoundedBuffer request_buffer(b),
             john_stat_buffer(b/3),
             jane_stat_buffer(b/3),

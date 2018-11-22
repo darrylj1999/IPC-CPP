@@ -8,38 +8,28 @@
 #include <string>
 using namespace std;
 
-void EXITONERROR (string msg);
+typedef enum {SERVER_SIDE, CLIENT_SIDE} Side;
+
+typedef enum {READ_MODE, WRITE_MODE} Mode;
+
+inline void EXITONERROR(string msg) {
+	perror(msg.c_str());
+	exit(-1);
+}
 
 class RequestChannel {
-
-public:
-
-	typedef enum {SERVER_SIDE, CLIENT_SIDE} Side;
-
-	typedef enum {READ_MODE, WRITE_MODE} Mode;
-
-private:
+protected:
 
 	string   my_name = "";
 	string side_name = "";
 	Side     my_side;
 
-	/*  The current implementation uses named pipes. */ 
-
-	// int wfd;
-	// int rfd;
-
-	// string pipe_name(Mode _mode);
-	// void create_pipe (string _pipe_name);
-	// void open_read_pipe(string _pipe_name);
-	// void open_write_pipe(string _pipe_name);
-	
-	
 public:
 
-	/* -- CONSTRUCTOR/DESTRUCTOR */
-
-	RequestChannel(const string _name, const Side _side);
+	RequestChannel(const string _name, const Side _side):
+		my_name(_name), 
+		my_side(_side), 
+		side_name((_side == ::SERVER_SIDE) ? "SERVER" : "CLIENT") {};
 	/* Creates a "local copy" of the channel specified by the given name. 
 	 If the channel does not exist, the associated IPC mechanisms are 
 	 created. If the channel exists already, this object is associated with the channel.
@@ -56,7 +46,7 @@ public:
 	 request channels to 125.
 	*/
 
-	~RequestChannel();
+	~RequestChannel() {};
 	/* Destructor of the local copy of the bus. By default, the Server Side deletes any IPC 
 	 mechanisms associated with the channel. */
 
@@ -70,12 +60,6 @@ public:
 
 	string name();
 	/* Returns the name of the request channel. */
-
-	// int read_fd();
-	/* Returns the file descriptor used to read from the channel. */
-
-	// int write_fd();
-	/* Returns the file descriptor used to write to the channel. */
 };
 
 

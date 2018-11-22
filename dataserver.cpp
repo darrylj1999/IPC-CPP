@@ -10,10 +10,13 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "reqchannel.h"
+#include "./includes/FIFORequestChannel.h"
+#include "./includes/MQRequestChannel.h"
+#include "./includes/SHMRequestChannel.h"
 #include <pthread.h>
 using namespace std;
 
+#define RequestChannel FIFORequestChannel
 
 int nchannels = 0;
 pthread_mutex_t newchannel_lock;
@@ -23,10 +26,11 @@ void process_newchannel(RequestChannel* _channel) {
 	nchannels ++;
 	string new_channel_name = "data" + to_string(nchannels) + "_";
 	_channel->cwrite(new_channel_name);
-	RequestChannel * data_channel = new RequestChannel(new_channel_name, RequestChannel::SERVER_SIDE);
+	RequestChannel * data_channel = new RequestChannel(new_channel_name, SERVER_SIDE);
 	pthread_t thread_id;
 	if (pthread_create(& thread_id, NULL, handle_process_loop, data_channel) < 0 ) {
-		EXITONERROR ("");
+		perror("pthread_create");
+		exit(-1);
 	}
 	
 }
@@ -67,7 +71,7 @@ void* handle_process_loop (void* _channel) {
 
 int main(int argc, char * argv[]) {
 	newchannel_lock = PTHREAD_MUTEX_INITIALIZER;
-	RequestChannel control_channel("control", RequestChannel::SERVER_SIDE);
+	RequestChannel control_channel("control", SERVER_SIDE);
 	handle_process_loop (&control_channel);	
 }
 

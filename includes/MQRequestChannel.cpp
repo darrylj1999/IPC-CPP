@@ -30,60 +30,30 @@
 #include <signal.h>
 #include <errno.h>
 
-#include "reqchannel.h"
-
-void EXITONERROR (string msg){
-	perror (msg.c_str());
-	exit (-1);
-}
+#include "MQRequestChannel.h"
 
 /*--------------------------------------------------------------------------*/
 /* CONSTRUCTOR/DESTRUCTOR FOR CLASS   R e q u e s t C h a n n e l  */
 /*--------------------------------------------------------------------------*/
 
 MQRequestChannel::MQRequestChannel(const std::string _name, const Side _side) :
-my_name(_name), my_side(_side), side_name((_side == MQRequestChannel::SERVER_SIDE) ? "SERVER" : "CLIENT")
+RequestChannel(_name, _side)
 {
-	if (_side == SERVER_SIDE) {
-		open_write_pipe(pipe_name(WRITE_MODE).c_str());
-		open_read_pipe(pipe_name(READ_MODE).c_str());
+	if (_side == ::SERVER_SIDE) {
 	}
 	else {
-		open_read_pipe(pipe_name(READ_MODE).c_str());
-		open_write_pipe(pipe_name(WRITE_MODE).c_str());
 	}
 }
 
 MQRequestChannel::~MQRequestChannel() {
-	close(wfd);
-	close(rfd);
-	//if (my_side == SERVER_SIDE) {
-		remove(pipe_name(READ_MODE).c_str());
-		remove(pipe_name(WRITE_MODE).c_str());
-	//}
 }
 
 const int MAX_MESSAGE = 255;
 
 string MQRequestChannel::cread() {
-
-	char buf [MAX_MESSAGE];
-	if (read(rfd, buf, MAX_MESSAGE) <= 0) {
-		EXITONERROR ("cread");
-	}
-	string s = buf;
-	return s;
-
 }
 
-void MQRequestChannel::cwrite(string msg) {
-
-	if (msg.size() > MAX_MESSAGE) {
-		EXITONERROR ("cwrite");
-	}
-	if (write(wfd, msg.c_str(), msg.size()+1) < 0) { // msg.size() + 1 to include the NULL byte
-		EXITONERROR ("cwrite");
-	}
+int MQRequestChannel::cwrite(string msg) {
 }
 
 std::string MQRequestChannel::name() {

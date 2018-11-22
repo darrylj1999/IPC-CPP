@@ -1,29 +1,16 @@
 
-#ifndef _reqchannel_H_                   
-#define _reqchannel_H_
+#ifndef _MQ_reqchannel_H_                   
+#define _MQ_reqchannel_H_
 
 #include <iostream>
 #include <fstream>
 #include <exception>
 #include <string>
+#include "../reqchannel.h"
 using namespace std;
 
-void EXITONERROR (string msg);
-
-class MQRequestChannel {
-
-public:
-
-	typedef enum {SERVER_SIDE, CLIENT_SIDE} Side;
-
-	typedef enum {READ_MODE, WRITE_MODE} Mode;
-
+class MQRequestChannel : RequestChannel {
 private:
-
-	string   my_name = "";
-	string side_name = "";
-	Side     my_side;
-
 	/*  The current implementation uses message queues. */ 
 
 	

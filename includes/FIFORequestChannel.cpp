@@ -30,24 +30,20 @@
 #include <signal.h>
 #include <errno.h>
 
-#include "reqchannel.h"
+#include "FIFORequestChannel.h"
 
-void EXITONERROR (string msg){
-	perror (msg.c_str());
-	exit (-1);
-}
 std::string FIFORequestChannel::pipe_name(Mode _mode) {
 	std::string pname = "fifo_" + my_name;
 
-	if (my_side == CLIENT_SIDE) {
-		if (_mode == READ_MODE)
+	if (my_side == ::CLIENT_SIDE) {
+		if (_mode == ::READ_MODE)
 			pname += "1";
 		else
 			pname += "2";
 	}
 	else {
-	/* SERVER_SIDE */
-		if (_mode == READ_MODE)
+	/* ::SERVER_SIDE */
+		if (_mode == ::READ_MODE)
 			pname += "2";
 		else
 			pname += "1";
@@ -56,25 +52,25 @@ std::string FIFORequestChannel::pipe_name(Mode _mode) {
 }
 void FIFORequestChannel::create_pipe (string _pipe_name){
 	mkfifo(_pipe_name.c_str(), 0600) < 0; //{
-	//	EXITONERROR (_pipe_name);
+	//	::EXITONERROR (_pipe_name);
 	//}
 }
 
 
 void FIFORequestChannel::open_write_pipe(string _pipe_name) {
 	
-	//if (my_side == SERVER_SIDE)
+	//if (my_side == ::SERVER_SIDE)
 		create_pipe (_pipe_name);
 
 	wfd = open(_pipe_name.c_str(), O_WRONLY);
 	if (wfd < 0) {
-		EXITONERROR (_pipe_name);
+		::EXITONERROR (_pipe_name);
 	}
 }
 
 void FIFORequestChannel::open_read_pipe(string _pipe_name) {
 
-	//if (my_side == SERVER_SIDE)
+	//if (my_side == ::SERVER_SIDE)
 		create_pipe (_pipe_name);
 	rfd = open(_pipe_name.c_str (), O_RDONLY);
 	if (rfd < 0) {
@@ -88,24 +84,24 @@ void FIFORequestChannel::open_read_pipe(string _pipe_name) {
 /*--------------------------------------------------------------------------*/
 
 FIFORequestChannel::FIFORequestChannel(const std::string _name, const Side _side) :
-my_name(_name), my_side(_side), side_name((_side == FIFORequestChannel::SERVER_SIDE) ? "SERVER" : "CLIENT")
+RequestChannel(_name, _side)
 {
-	if (_side == SERVER_SIDE) {
-		open_write_pipe(pipe_name(WRITE_MODE).c_str());
-		open_read_pipe(pipe_name(READ_MODE).c_str());
+	if (_side == ::SERVER_SIDE) {
+		open_write_pipe(pipe_name(::WRITE_MODE).c_str());
+		open_read_pipe(pipe_name(::READ_MODE).c_str());
 	}
 	else {
-		open_read_pipe(pipe_name(READ_MODE).c_str());
-		open_write_pipe(pipe_name(WRITE_MODE).c_str());
+		open_read_pipe(pipe_name(::READ_MODE).c_str());
+		open_write_pipe(pipe_name(::WRITE_MODE).c_str());
 	}
 }
 
 FIFORequestChannel::~FIFORequestChannel() {
 	close(wfd);
 	close(rfd);
-	//if (my_side == SERVER_SIDE) {
-		remove(pipe_name(READ_MODE).c_str());
-		remove(pipe_name(WRITE_MODE).c_str());
+	//if (my_side == ::SERVER_SIDE) {
+		remove(pipe_name(::READ_MODE).c_str());
+		remove(pipe_name(::WRITE_MODE).c_str());
 	//}
 }
 
@@ -115,20 +111,22 @@ string FIFORequestChannel::cread() {
 
 	char buf [MAX_MESSAGE];
 	if (read(rfd, buf, MAX_MESSAGE) <= 0) {
-		EXITONERROR ("cread");
+		::EXITONERROR ("cread");
 	}
 	string s = buf;
 	return s;
 
 }
 
-void FIFORequestChannel::cwrite(string msg) {
+int FIFORequestChannel::cwrite(string msg) {
 
 	if (msg.size() > MAX_MESSAGE) {
-		EXITONERROR ("cwrite");
+		::EXITONERROR ("cwrite");
+		return -1;
 	}
 	if (write(wfd, msg.c_str(), msg.size()+1) < 0) { // msg.size() + 1 to include the NULL byte
-		EXITONERROR ("cwrite");
+		::EXITONERROR ("cwrite");
+		return msg.size()+1;
 	}
 }
 
