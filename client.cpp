@@ -150,6 +150,7 @@ void* worker_thread_function(void* arg) {
             int idx = -1;
 
             string response = workerChannel->cread();
+	    // TODO change this to a function
             if ( request == "data John Smith" )
                 idx = 0;
             else if ( request == "data Jane Smith" )

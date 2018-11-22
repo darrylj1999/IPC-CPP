@@ -10,7 +10,7 @@ using namespace std;
 
 void EXITONERROR (string msg);
 
-class RequestChannel {
+class MQRequestChannel {
 
 public:
 
@@ -24,22 +24,14 @@ private:
 	string side_name = "";
 	Side     my_side;
 
-	/*  The current implementation uses named pipes. */ 
+	/*  The current implementation uses message queues. */ 
 
-	// int wfd;
-	// int rfd;
-
-	// string pipe_name(Mode _mode);
-	// void create_pipe (string _pipe_name);
-	// void open_read_pipe(string _pipe_name);
-	// void open_write_pipe(string _pipe_name);
-	
 	
 public:
 
 	/* -- CONSTRUCTOR/DESTRUCTOR */
 
-	RequestChannel(const string _name, const Side _side);
+	MQRequestChannel(const string _name, const Side _side);
 	/* Creates a "local copy" of the channel specified by the given name. 
 	 If the channel does not exist, the associated IPC mechanisms are 
 	 created. If the channel exists already, this object is associated with the channel.
@@ -56,26 +48,20 @@ public:
 	 request channels to 125.
 	*/
 
-	~RequestChannel();
+	~MQRequestChannel();
 	/* Destructor of the local copy of the bus. By default, the Server Side deletes any IPC 
 	 mechanisms associated with the channel. */
 
-	virtual string cread()=0;
+	string cread();
 	/* Blocking read of data from the channel. Returns a string of characters
 	 read from the channel. Returns NULL if read failed. */
 
-	virtual int cwrite(string _msg)=0;
+	int cwrite(string _msg);
 	/* Write the data to the channel. The function returns the number of characters written
 	 to the channel. */
 
 	string name();
 	/* Returns the name of the request channel. */
-
-	// int read_fd();
-	/* Returns the file descriptor used to read from the channel. */
-
-	// int write_fd();
-	/* Returns the file descriptor used to write to the channel. */
 };
 
 
