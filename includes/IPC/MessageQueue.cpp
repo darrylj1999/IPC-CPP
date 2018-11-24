@@ -3,7 +3,7 @@
 #define STRING_IS_DEFAULT_DATA_TYPE
 
 MessageQueue::MessageQueue(): 
-    seed( time(NULL) ),
+    seed(0),
     max_size(200),
     filename("MessageQueue.h") {
     // Getting message queue's key
@@ -51,9 +51,9 @@ MessageQueue::~MessageQueue() {
     msgctl(msqid, IPC_RMID, NULL);
 }
 
-void MessageQueue::send(int msgtype, const MessageQueue::DATA_T* data) {
+void MessageQueue::send(int msgtype, const MessageQueue::DATA_T data) {
     #ifdef STRING_IS_DEFAULT_DATA_TYPE
-        int msgsize = ( data -> length() ) + 1;
+        int msgsize = data.length() + 1;
         send(msgtype, data, msgsize);
     #else
         int msg_size = sizeof MessageQueue::DATA_T;
@@ -61,8 +61,8 @@ void MessageQueue::send(int msgtype, const MessageQueue::DATA_T* data) {
     #endif
 }
 
-void MessageQueue::send(int msgtype, const MessageQueue::DATA_T* data, int msgsize) {
-    STORAGE_T temp { msgtype, *data };
+void MessageQueue::send(int msgtype, const MessageQueue::DATA_T data, int msgsize) {
+    STORAGE_T temp { msgtype, data };
     int status = msgsnd(msqid, &temp, msgsize, 0);
     if ( status < 0 ) {
         perror("msgsnd");
@@ -71,12 +71,11 @@ void MessageQueue::send(int msgtype, const MessageQueue::DATA_T* data, int msgsi
 }
 
 MessageQueue::DATA_T MessageQueue::recieve(int msgtype) {
-    void* temp_ptr = nullptr;
-    int status = msgrcv(msqid, temp_ptr, max_size, msgtype, 0);
+    STORAGE_T temp { msgtype, "" };
+    int status = msgrcv(msqid, &temp, max_size, msgtype, 0);
     if ( status < 0 ) {
         perror("msgrcv");
         exit(-1);
     }
-    STORAGE_T* temp = (STORAGE_T*) temp_ptr;
-    return temp -> data;
+    return temp.data;
 }

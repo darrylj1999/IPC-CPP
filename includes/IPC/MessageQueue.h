@@ -38,14 +38,14 @@ class MessageQueue {
     // Methods
     public:        
         MessageQueue();
-        MessageQueue( std::string t_filename, int t_max_size, int t_seed=time(NULL) );
+        MessageQueue(std::string t_filename, int t_max_size, int t_seed);
         ~MessageQueue();
 
         // Function to create a 'postbox' and return corresponding msgtype
         // int createPostBox(const DATA_T* init_data=nullptr);
         // send 'data' to 'msgtype'
-        void send(int type, const DATA_T* data);
-        void send(int msgtype, const MessageQueue::DATA_T* data, int msgsize);
+        void send(int msgtype, const DATA_T data);
+        void send(int msgtype, const DATA_T data, int msgsize);
         // recieve 'data' from 'msgtype'
         DATA_T recieve(int msgtype);
 };
