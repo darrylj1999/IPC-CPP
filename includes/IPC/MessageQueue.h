@@ -31,9 +31,9 @@ class MessageQueue {
         };
 
     // Data Members
+        int seed, msqid, max_size;
     private:
         bool clear_files;
-        int seed, msqid, max_size;
         std::string filename;
     
     // Methods

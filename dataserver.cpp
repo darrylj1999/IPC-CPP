@@ -48,7 +48,7 @@ void process_request(RequestChannel* _channel, string _request) {
 		process_newchannel(_channel);
 	}
 	else {
-		_channel->cwrite("UNREQ " + _request); // ("unknown request");
+		// _channel->cwrite("UNREQ " + _request); // ("unknown request");
 	}
 }
 
@@ -56,7 +56,7 @@ void* handle_process_loop (void* _channel) {
 	RequestChannel* channel = (RequestChannel *) _channel;
 	for(;;) {
 		string request = channel->cread();
-		if (request.compare("quit") == 0) {
+		if ( ( request.compare("quit") == 0 ) || request.empty() ) {
 			break;                  // break out of the loop;
 		}
 		process_request(channel, request);

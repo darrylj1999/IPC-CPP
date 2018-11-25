@@ -37,6 +37,7 @@
 #include "Histogram.h"
 using namespace std;
 
+#define VERSION "Message Queues"
 #define RequestChannel MQRequestChannel
 
 // Wrapper around request arguments
@@ -155,6 +156,7 @@ void* worker_thread_function(void* arg) {
             int idx = -1;
 
             string response = workerChannel->cread();
+            // std::cout << "Client sent " << request << " and recieved " << response << std::endl;
 	    // TODO change this to a function
             if ( request == "data John Smith" )
                 idx = 0;
@@ -163,8 +165,7 @@ void* worker_thread_function(void* arg) {
             else if ( request == "data Joe Smith" )
                 idx = 2;
             if ( idx == -1 ) std::cout << "BAD " << response << std::endl;
-            // std::cout << request << ' ' << response << " PASSED" << std::endl;
-            req -> res_ptr[idx] -> push (response);
+            else req -> res_ptr[idx] -> push (response);
         }
     }
 }
@@ -224,6 +225,7 @@ int main(int argc, char * argv[]) {
         cout << "n == " << n << endl;
         cout << "w == " << w << endl;
         cout << "b == " << b << endl;
+        cout << "v == " << VERSION << endl;
 
         RequestChannel* chan = new RequestChannel("control", ::CLIENT_SIDE);
         BoundedBuffer request_buffer(b),

@@ -71,18 +71,22 @@ void MessageQueue::send(int msgtype, const MessageQueue::DATA_T data) {
 void MessageQueue::send(int msgtype, const MessageQueue::DATA_T data, int msgsize) {
     STORAGE_T temp { msgtype, data };
     int status = msgsnd(msqid, &temp, msgsize, 0);
+    /*
     if ( status < 0 ) {
         perror("msgsnd");
         exit(-1);
     }
+    */
 }
 
 MessageQueue::DATA_T MessageQueue::recieve(int msgtype) {
     STORAGE_T temp { msgtype, "" };
     int status = msgrcv(msqid, &temp, max_size, msgtype, 0);
+    /*
     if ( status < 0 ) {
         perror("msgrcv");
         exit(-1);
     }
+    */
     return temp.data;
 }

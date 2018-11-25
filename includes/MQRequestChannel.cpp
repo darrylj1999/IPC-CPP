@@ -57,7 +57,7 @@ string MQRequestChannel::cread() {
         result = mq.recieve(2);
     else 
         result = mq.recieve(1);
-    // std::cout << "Read in " << result << std::endl;
+    // std::cout << side_name << ' ' << my_name << ' ' << mq.msqid << " read " << result << std::endl;
     return result;
 }
 
@@ -70,7 +70,7 @@ int MQRequestChannel::cwrite(string msg) {
         mq.send(1, msg);
     else 
         mq.send(2, msg);
-    // std::cout << "Wrote " << msg << std::endl;
+    // std::cout << side_name << ' ' <<  my_name << ' ' << mq.msqid << " wrote " << msg << std::endl;
     return msg.length() + 1;
 }
 
