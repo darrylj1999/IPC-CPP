@@ -32,28 +32,46 @@
 
 #include "MQRequestChannel.h"
 
+#define MAX_MESSAGE 255
+#define DEFAULT_SEED 10
+
 /*--------------------------------------------------------------------------*/
 /* CONSTRUCTOR/DESTRUCTOR FOR CLASS   R e q u e s t C h a n n e l  */
 /*--------------------------------------------------------------------------*/
 
 MQRequestChannel::MQRequestChannel(const std::string _name, const Side _side) :
-RequestChannel(_name, _side)
+RequestChannel(_name, _side), mq(_name, MAX_MESSAGE, DEFAULT_SEED)
 {
-	if (_side == ::SERVER_SIDE) {
+	/* if (_side == ::SERVER_SIDE) {
 	}
 	else {
-	}
+	} */ // I may not need to distinguish between server and client side
 }
 
 MQRequestChannel::~MQRequestChannel() {
 }
 
-const int MAX_MESSAGE = 255;
-
 string MQRequestChannel::cread() {
+    string result("");
+    if (my_side == ::SERVER_SIDE)
+        result = mq.recieve(2);
+    else 
+        result = mq.recieve(1);
+    // std::cout << "Read in " << result << std::endl;
+    return result;
 }
 
 int MQRequestChannel::cwrite(string msg) {
+    if ( msg.length() > MAX_MESSAGE ) {
+        ::EXITONERROR("cwrite " + msg + " failed");
+        return -1;
+    }
+    if (my_side == ::SERVER_SIDE)
+        mq.send(1, msg);
+    else 
+        mq.send(2, msg);
+    // std::cout << "Wrote " << msg << std::endl;
+    return msg.length() + 1;
 }
 
 std::string MQRequestChannel::name() {

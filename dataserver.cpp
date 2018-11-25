@@ -16,7 +16,7 @@
 #include <pthread.h>
 using namespace std;
 
-#define RequestChannel FIFORequestChannel
+#define RequestChannel MQRequestChannel
 
 int nchannels = 0;
 pthread_mutex_t newchannel_lock;
@@ -48,7 +48,7 @@ void process_request(RequestChannel* _channel, string _request) {
 		process_newchannel(_channel);
 	}
 	else {
-		_channel->cwrite("unknown request");
+		_channel->cwrite("UNREQ " + _request); // ("unknown request");
 	}
 }
 

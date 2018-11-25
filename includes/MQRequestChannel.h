@@ -7,12 +7,13 @@
 #include <exception>
 #include <string>
 #include "../reqchannel.h"
+#include "IPC/MessageQueue.h"
 using namespace std;
 
 class MQRequestChannel : RequestChannel {
 private:
 	/*  The current implementation uses message queues. */ 
-
+	MessageQueue mq;
 	
 public:
 

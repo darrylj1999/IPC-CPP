@@ -26,12 +26,13 @@ class MessageQueue {
     public:
         typedef std::string DATA_T;
         struct STORAGE_T {
-            int msgtype; 
+            long msgtype; 
             DATA_T data;
         };
 
     // Data Members
     private:
+        bool clear_files;
         int seed, msqid, max_size;
         std::string filename;
     

@@ -37,7 +37,7 @@
 #include "Histogram.h"
 using namespace std;
 
-#define RequestChannel FIFORequestChannel
+#define RequestChannel MQRequestChannel
 
 // Wrapper around request arguments
 struct Request {
@@ -141,6 +141,7 @@ void* worker_thread_function(void* arg) {
     Worker* req = (Worker*) arg;
     std::string s = req -> channel_create();
     RequestChannel* workerChannel = new RequestChannel(s, ::CLIENT_SIDE);
+    // std::cout << "New worker channel named " << s << " is created" << std::endl;
 
     // Reading until thread hits 'quit'
     while(true) {
@@ -162,6 +163,7 @@ void* worker_thread_function(void* arg) {
             else if ( request == "data Joe Smith" )
                 idx = 2;
             if ( idx == -1 ) std::cout << "BAD " << response << std::endl;
+            // std::cout << request << ' ' << response << " PASSED" << std::endl;
             req -> res_ptr[idx] -> push (response);
         }
     }

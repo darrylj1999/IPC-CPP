@@ -3,6 +3,7 @@
 #define STRING_IS_DEFAULT_DATA_TYPE
 
 MessageQueue::MessageQueue(): 
+    clear_files(false),
     seed(0),
     max_size(200),
     filename("MessageQueue.h") {
@@ -23,9 +24,14 @@ MessageQueue::MessageQueue():
 }
 
 MessageQueue::MessageQueue(std::string t_filename, int t_max_size, int t_seed):
+    clear_files(true),
     seed(t_seed),
     max_size(t_max_size),
     filename(t_filename) {
+    // File already exists. Do not remove
+    if( access( filename.c_str(), F_OK ) != -1 )
+        clear_files = false;
+    
     // Create file if does not exist
     int fid = creat(filename.c_str(), 0666);
     close(fid);
@@ -49,16 +55,17 @@ MessageQueue::MessageQueue(std::string t_filename, int t_max_size, int t_seed):
 MessageQueue::~MessageQueue() {
     // Deallocating message queue
     msgctl(msqid, IPC_RMID, NULL);
+    if ( clear_files ) remove(filename.c_str());
 }
 
 void MessageQueue::send(int msgtype, const MessageQueue::DATA_T data) {
     #ifdef STRING_IS_DEFAULT_DATA_TYPE
         int msgsize = data.length() + 1;
-        send(msgtype, data, msgsize);
     #else
-        int msg_size = sizeof MessageQueue::DATA_T;
         #warning "String is not being used as default data type!"
+        int msgsize = sizeof MessageQueue::DATA_T;
     #endif
+    send(msgtype, data, msgsize);
 }
 
 void MessageQueue::send(int msgtype, const MessageQueue::DATA_T data, int msgsize) {
