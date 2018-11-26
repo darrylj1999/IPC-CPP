@@ -3,7 +3,7 @@
 FLAGS=-g -w -Wall -O1 -std=c++11
 INCLUDE_DIR=./includes
 CHANNEL_OBJS=FIFORequestChannel.o MQRequestChannel.o SHMRequestChannel.o
-IPC_OBJS=MessageQueue.o# SharedMemory.o KernelSemaphore.o
+IPC_OBJS=MessageQueue.o# KernelSemaphore.o SharedMemory.o
 
 all: dataserver client
 
