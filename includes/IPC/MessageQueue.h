@@ -31,14 +31,12 @@ class MessageQueue {
         };
 
     // Data Members
-        int seed, msqid, max_size;
     private:
-        bool clear_files;
+        int seed, msqid, max_size;
         std::string filename;
     
     // Methods
-    public:        
-        MessageQueue();
+    public:
         MessageQueue(std::string t_filename, int t_max_size, int t_seed);
         ~MessageQueue();
 

@@ -2,60 +2,34 @@
 
 #define STRING_IS_DEFAULT_DATA_TYPE
 
-MessageQueue::MessageQueue(): 
-    clear_files(false),
-    seed(0),
-    max_size(200),
-    filename("MessageQueue.h") {
-    // Getting message queue's key
-    key_t msg_key = ftok(filename.c_str(), seed);
-    if ( msg_key < 0 ) {
-        perror("ftok");
-        std::cerr << "ftok called with " << filename << ' ' << seed << std::endl;
-        exit(-1);
-    }
-
-    // Creating message queue and retrieving id
-    msqid = msgget(msg_key, 0666 | IPC_CREAT);
-    if ( msqid < 0 ) {
-        perror("msgget");
-        exit(-1);
-    }
+inline void ERROR(const char* func) {
+    perror(func);
+    exit(-1);
 }
+inline void ERROR(std::string func) { ERROR(func.c_str()); }
 
 MessageQueue::MessageQueue(std::string t_filename, int t_max_size, int t_seed):
-    clear_files(true),
     seed(t_seed),
     max_size(t_max_size),
     filename(t_filename) {
-    // File already exists. Do not remove
-    if( access( filename.c_str(), F_OK ) != -1 )
-        clear_files = false;
-    
     // Create file if does not exist
     int fid = creat(filename.c_str(), 0666);
+    if ( fid < 0 ) ERROR("creat (" + filename + ")");
     close(fid);
 
     // Getting message queue's key
     key_t msg_key = ftok(filename.c_str(), seed);
-    if ( msg_key < 0 ) {
-        perror("ftok");
-        std::cerr << "ftok called with " << filename << ' ' << seed << std::endl;
-        exit(-1);
-    }
+    if ( msg_key < 0 ) ERROR("ftok (" + filename + ")");
 
     // Creating message queue and retrieving id
     msqid = msgget(msg_key, 0666 | IPC_CREAT);
-    if ( msqid < 0 ) {
-        perror("msgget");
-        exit(-1);
-    }
+    if ( msqid < 0 ) ERROR("msgget (" + filename + ")");
 }
 
 MessageQueue::~MessageQueue() {
     // Deallocating message queue
     msgctl(msqid, IPC_RMID, NULL);
-    if ( clear_files ) remove(filename.c_str());
+    remove(filename.c_str());
 }
 
 void MessageQueue::send(int msgtype, const MessageQueue::DATA_T data) {
@@ -72,10 +46,7 @@ void MessageQueue::send(int msgtype, const MessageQueue::DATA_T data, int msgsiz
     STORAGE_T temp { msgtype, data };
     int status = msgsnd(msqid, &temp, msgsize, 0);
     /*
-    if ( status < 0 ) {
-        perror("msgsnd");
-        exit(-1);
-    }
+    ERROR("msgsnd");
     */
 }
 
@@ -83,10 +54,7 @@ MessageQueue::DATA_T MessageQueue::recieve(int msgtype) {
     STORAGE_T temp { msgtype, "" };
     int status = msgrcv(msqid, &temp, max_size, msgtype, 0);
     /*
-    if ( status < 0 ) {
-        perror("msgrcv");
-        exit(-1);
-    }
+    ERROR("msgrcv");
     */
     return temp.data;
 }
