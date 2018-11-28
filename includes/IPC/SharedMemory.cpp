@@ -17,8 +17,8 @@ SharedMemory::SharedMemory(std::string t_filename, int t_max_size, int t_seed):
     seed(t_seed),
     max_size(t_max_size),
     filename(t_filename),
-    empty_sem("sem_empty_" + t_filename + "", 0),
-    full_sem("sem_full_" + t_filename + "", 1)
+    empty_sem("sem_empty_" + t_filename, 0),
+    full_sem("sem_full_" + t_filename, 1)
     {
     // Creating file if does not exist
     int fid = creat( filename.c_str(), 0666 );

@@ -34,8 +34,8 @@ class SharedMemory {
         typedef std::string DATA_T;
 
     // Data Members
-        char* shmptr;
     private:
+        char* shmptr;
         int seed, shmid, max_size;
         std::string filename;
         KernelSemaphore empty_sem, full_sem;

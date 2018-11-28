@@ -37,7 +37,7 @@
 // int semop(int semid, struct sembuf *sops, unsigned int nsops);
 
 class KernelSemaphore {
-    public:
+    private:
         /* INTERNAL DATA STRUCTURES */
         int semid, val;
         std::string filename;
