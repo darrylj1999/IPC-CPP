@@ -10,23 +10,22 @@ inline void ERROR(const char* func) {
 KernelSemaphore::KernelSemaphore(std::string t_filename, int t_val):
     val(t_val),
     filename(t_filename) {
-    // File does not exist, create it
-    if( access( filename.c_str(), F_OK ) == -1 ) {    
-        int fid = creat( filename.c_str(), 0666 );
-        if (fid < 0) ERROR("creat (creating key file)");
-        close(fid);
-    }
+    int fid = creat( filename.c_str(), 0666 );
+    if (fid < 0) ERROR("creat (creating key file)");
+    close(fid);
 
     // Get one semaphore
     key_t semkey = ftok(filename.c_str(), DEFAULT_KERNEL_SEMAPHORE_SEED);
     semid = semget( semkey, 1, 0666 | IPC_CREAT );
     if (semid < 0) ERROR("semget (getting semid)");
 
-    // Give it an initial value
-    union semun semopts;
-    semopts.val = val;
-    int status = semctl( semid, 0, SETVAL, semopts );
-    if (status < 0) ERROR("semctl (setting initial value)");
+    // Give it an initial value if it is not zero
+    if (val != 0) {
+        union semun semopts;
+        semopts.val = val;
+        int status = semctl( semid, 0, SETVAL, semopts );
+        if (status < 0) ERROR("semctl (setting initial value)");
+    }
 }
 
 KernelSemaphore::~KernelSemaphore() {
@@ -42,8 +41,8 @@ void KernelSemaphore::P() {
     sop.sem_op = -1;
     sop.sem_flg = 0;
     int status = semop( semid, &sop, 1 );
-    /* if (status < 0) ERROR("semop (P)"); */
-    val--;
+    if (status < 0) ERROR("semop (P)");
+    // val--;
 }
 
 // Release lock (increment)
@@ -53,10 +52,12 @@ void KernelSemaphore::V() {
     sop.sem_op = 1;
     sop.sem_flg = IPC_NOWAIT;
     int status = semop( semid, &sop, 1 );
-    /* if (status < 0) ERROR("semop (V)"); */
-    val++;
+    if (status < 0) ERROR("semop (V)");
+    // val++;
 }
 
 int KernelSemaphore::getval() {
-    return val;
+    int semval = semctl(semid, 0, GETVAL);
+    // if (semval < 0) ERROR("semctl (getval)");
+    return semval;
 }

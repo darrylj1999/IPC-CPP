@@ -6,11 +6,19 @@ inline void ERROR(const char* func) {
 }
 inline void ERROR(std::string func) { ERROR(func.c_str()); }
 
+inline struct shmid_ds get_shm_info(int shmid) {
+    struct shmid_ds shm_info;
+    int status = shmctl( shmid, IPC_STAT, &shm_info );
+    if ( status < 0 ) ERROR("shmctl (information)");
+    return shm_info;
+}
+
 SharedMemory::SharedMemory(std::string t_filename, int t_max_size, int t_seed):
     seed(t_seed),
     max_size(t_max_size),
     filename(t_filename),
-    shmmutex(t_filename + "_sem", 1)
+    empty_sem("sem_empty_" + t_filename + "", 0),
+    full_sem("sem_full_" + t_filename + "", 1)
     {
     // Creating file if does not exist
     int fid = creat( filename.c_str(), 0666 );
@@ -36,26 +44,29 @@ SharedMemory::~SharedMemory() {
     // Detaching shared memory
     int status = shmdt( (void*) shmptr );
     if (status < 0) ERROR("shmdt (" + filename + ")");
+    // Deleting if no processes are attached
+    struct shmid_ds shm_info = get_shm_info(shmid);
+    if ( shm_info.shm_nattch == 0 ) {
+        status = shmctl( shmid, IPC_RMID, &shm_info );
+        // if (status < 0) ERROR("shmctl (removal)");
+    }
 }
 
-SharedMemory::DATA_T SharedMemory::read() {
+SharedMemory::DATA_T SharedMemory::pop() {
     // Lock
-    shmmutex.P();
+    empty_sem.P();
     // Copy all 'max_size' bytes to result
-    char* result_c_str = new char[max_size];
-    strncpy( result_c_str, shmptr, max_size );
-    std::string result(result_c_str);
-    delete[] result_c_str;
+    std::string result(shmptr);
     // Unlock
-    shmmutex.V();
+    full_sem.V();
     return result;
 }
 
-void SharedMemory::write(SharedMemory::DATA_T input) {
+void SharedMemory::push(SharedMemory::DATA_T input) {
     // Lock
-    shmmutex.P();
+    full_sem.P();
     // Write 'max_size' bytes to shared memory. strncpy fills characters after '\0' byte with zeros
     strncpy( shmptr, input.c_str(), max_size );
     // Unlock
-    shmmutex.V();
+    empty_sem.V();
 }

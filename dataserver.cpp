@@ -16,7 +16,7 @@
 #include <pthread.h>
 using namespace std;
 
-#define RequestChannel MQRequestChannel
+#define RequestChannel SHMRequestChannel
 
 int nchannels = 0;
 pthread_mutex_t newchannel_lock;
@@ -48,7 +48,7 @@ void process_request(RequestChannel* _channel, string _request) {
 		process_newchannel(_channel);
 	}
 	else {
-		// _channel->cwrite("UNREQ " + _request); // ("unknown request");
+		_channel->cwrite("UNREQ " + _request); // ("unknown request");
 	}
 }
 
@@ -56,6 +56,7 @@ void* handle_process_loop (void* _channel) {
 	RequestChannel* channel = (RequestChannel *) _channel;
 	for(;;) {
 		string request = channel->cread();
+		// std::cout << "Dataserver recieved " << request << std::endl;
 		if ( ( request.compare("quit") == 0 ) || request.empty() ) {
 			break;                  // break out of the loop;
 		}

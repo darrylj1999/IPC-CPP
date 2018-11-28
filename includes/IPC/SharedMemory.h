@@ -7,6 +7,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/types.h>
+#include <iostream>
 #include "KernelSemaphore.h"
 
 // Get (or create) Shared Memory segment
@@ -33,11 +34,11 @@ class SharedMemory {
         typedef std::string DATA_T;
 
     // Data Members
+        char* shmptr;
     private:
         int seed, shmid, max_size;
-        char* shmptr;
         std::string filename;
-        KernelSemaphore shmmutex;
+        KernelSemaphore empty_sem, full_sem;
 
     // Methods
     public:
@@ -45,9 +46,9 @@ class SharedMemory {
         ~SharedMemory();
 
         // Read from shared memory
-        DATA_T read();
+        DATA_T pop();
         // Write to shared memory
-        void write(DATA_T input);
+        void push(DATA_T input);
 };
 
 #endif

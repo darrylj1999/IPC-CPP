@@ -1,11 +1,17 @@
 # makefile
 
-FLAGS=-g -w -Wall -O1 -std=c++11
+FLAGS=-g -w -I -O1 -Wall -std=c++11
 INCLUDE_DIR=./includes
 CHANNEL_OBJS=FIFORequestChannel.o MQRequestChannel.o SHMRequestChannel.o
-IPC_OBJS=MessageQueue.o# KernelSemaphore.o SharedMemory.o
+IPC_OBJS=KernelSemaphore.o SharedMemory.o MessageQueue.o
 
 all: dataserver client
+
+KernelSemaphore.o: $(INCLUDE_DIR)/IPC/KernelSemaphore.h $(INCLUDE_DIR)/IPC/KernelSemaphore.cpp
+	g++ $(FLAGS) -c $(INCLUDE_DIR)/IPC/KernelSemaphore.cpp
+
+SharedMemory.o: $(INCLUDE_DIR)/IPC/SharedMemory.h $(INCLUDE_DIR)/IPC/SharedMemory.cpp
+	g++ $(FLAGS) -c $(INCLUDE_DIR)/IPC/SharedMemory.cpp
 
 MessageQueue.o: $(INCLUDE_DIR)/IPC/MessageQueue.h $(INCLUDE_DIR)/IPC/MessageQueue.cpp
 	g++ $(FLAGS) -c $(INCLUDE_DIR)/IPC/MessageQueue.cpp
@@ -36,4 +42,4 @@ bufferTest: testBuffer.cpp BoundedBuffer.o
 	g++ -g -w -Wall -std=c++11 -o bufferTest testBuffer.cpp BoundedBuffer.o -lpthread
 
 clean:
-	rm -rf *.o fifo* dataserver client *.dSYM/ bufferTest
+	rm -rf *.o fifo* sem_* dataserver client *.dSYM/ bufferTest

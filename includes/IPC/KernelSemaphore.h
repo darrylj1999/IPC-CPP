@@ -3,6 +3,7 @@
 
 #include "string"
 #include "fcntl.h"
+#include <iostream>
 #include <unistd.h>
 #include <sys/ipc.h>
 #include "sys/sem.h"
@@ -36,7 +37,7 @@
 // int semop(int semid, struct sembuf *sops, unsigned int nsops);
 
 class KernelSemaphore {
-    private :
+    public:
         /* INTERNAL DATA STRUCTURES */
         int semid, val;
         std::string filename;

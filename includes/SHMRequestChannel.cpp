@@ -32,28 +32,45 @@
 
 #include "SHMRequestChannel.h"
 
+#define DEFAULT_SHM_MAX_SIZE 256
+#define DEFAULT_SHM_SEED 40
+
 /*--------------------------------------------------------------------------*/
 /* CONSTRUCTOR/DESTRUCTOR FOR CLASS   R e q u e s t C h a n n e l  */
 /*--------------------------------------------------------------------------*/
 
 SHMRequestChannel::SHMRequestChannel(const std::string _name, const Side _side) :
-RequestChannel(_name, _side)
-{
-	if (_side == ::SERVER_SIDE) {
-	}
-	else {
-	}
-}
+RequestChannel(_name, _side), 
+server_shm(_name + "server", DEFAULT_SHM_MAX_SIZE, DEFAULT_SHM_SEED),
+client_shm(_name + "client", DEFAULT_SHM_MAX_SIZE, DEFAULT_SHM_SEED)
+{}
 
-SHMRequestChannel::~SHMRequestChannel() {
-}
-
-const int MAX_MESSAGE = 255;
+SHMRequestChannel::~SHMRequestChannel() {}
 
 string SHMRequestChannel::cread() {
+    std::string result;
+    // Server reads from server
+    // Client reads from client
+    if (my_side == ::SERVER_SIDE) {
+        result = server_shm.pop();
+    }
+    else {
+        result = client_shm.pop();
+    }
+    return result;
 }
 
 int SHMRequestChannel::cwrite(string msg) {
+    if (msg.length() > DEFAULT_SHM_MAX_SIZE) return -1;
+    // Server writes to client
+    // Client writes to server
+    if (my_side == ::SERVER_SIDE) {
+        client_shm.push(msg);
+    }
+    else {
+        server_shm.push(msg);
+    }
+    return msg.length() + 1;
 }
 
 std::string SHMRequestChannel::name() {

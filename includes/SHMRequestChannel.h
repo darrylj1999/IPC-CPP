@@ -7,12 +7,13 @@
 #include <exception>
 #include <string>
 #include "../reqchannel.h"
+#include "IPC/SharedMemory.h"
 using namespace std;
 
 class SHMRequestChannel : RequestChannel {
 private:
 	/*  The current implementation uses shared memory. */ 
-	
+	SharedMemory server_shm, client_shm;
 	
 public:
 
