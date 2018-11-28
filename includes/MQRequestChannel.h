@@ -10,7 +10,7 @@
 #include "IPC/MessageQueue.h"
 using namespace std;
 
-class MQRequestChannel : RequestChannel {
+class MQRequestChannel : public RequestChannel {
 private:
 	/*  The current implementation uses message queues. */ 
 	MessageQueue mq;

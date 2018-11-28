@@ -9,7 +9,7 @@
 #include "../reqchannel.h"
 using namespace std;
 
-class FIFORequestChannel : RequestChannel {
+class FIFORequestChannel : public RequestChannel {
 private:
 	/*  The current implementation uses named pipes. */ 
 

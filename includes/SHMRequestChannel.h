@@ -10,7 +10,7 @@
 #include "IPC/SharedMemory.h"
 using namespace std;
 
-class SHMRequestChannel : RequestChannel {
+class SHMRequestChannel : public RequestChannel {
 private:
 	/*  The current implementation uses shared memory. */ 
 	SharedMemory server_shm, client_shm;

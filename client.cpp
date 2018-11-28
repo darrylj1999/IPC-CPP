@@ -38,16 +38,18 @@
 #include "Histogram.h"
 using namespace std;
 
-#ifdef MQREQCHANNEL
-    #define VERSION "Message Queues"
-    #define RequestChannel MQRequestChannel
-#elif defined SHMREQCHANNEL
-    #define VERSION "Shared Memory"
-    #define RequestChannel SHMRequestChannel
-#else
-    #define VERSION "Named Pipes"
-    #define RequestChannel FIFORequestChannel
-#endif
+// Convention (type of channel)
+// 0 -> FIFO
+// 1 -> MQ
+// 2 -> SHM
+int type_of_channel = 0;
+// Helper function to get new channel based on runtime necessity
+inline RequestChannel* get_new_channel(int TYPE, std::string _name, Side _side) {
+    if ( TYPE == 0 ) return new FIFORequestChannel(_name, _side);
+    else if ( TYPE == 1 ) return new MQRequestChannel(_name, _side);
+    else if ( TYPE == 2)  return new SHMRequestChannel(_name, _side);
+    else return NULL;
+}
 
 // Wrapper around request arguments
 struct Request {
@@ -150,7 +152,8 @@ void* worker_thread_function(void* arg) {
 
     Worker* req = (Worker*) arg;
     std::string s = req -> channel_create();
-    RequestChannel* workerChannel = new RequestChannel(s, ::CLIENT_SIDE);
+    // new RequestChannel(s, ::CLIENT_SIDE);
+    RequestChannel* workerChannel = get_new_channel( type_of_channel, s, CLIENT_SIDE ); 
     // std::cout << "New worker channel named " << s << " is created" << std::endl;
 
     // Reading until thread hits 'quit'
@@ -211,7 +214,7 @@ int main(int argc, char * argv[]) {
     int w = 1; //default number of worker threads
     int b = 3 * n; // default capacity of the request buffer, you should change this default
     int opt = 0;
-    while ((opt = getopt(argc, argv, "n:w:b:")) != -1) {
+    while ((opt = getopt(argc, argv, "n:w:b:i:")) != -1) {
         switch (opt) {
             case 'n':
                 n = atoi(optarg);
@@ -222,7 +225,19 @@ int main(int argc, char * argv[]) {
             case 'b':
                 b = atoi (optarg);
                 break;
+            case 'i':
+		char o = optarg[0];
+		switch (o) {
+		    case 'f': { type_of_channel = 0; break; };
+                    case 'q': { type_of_channel = 1; break; };
+		    case 's': { type_of_channel = 2; break; };
+		    default: { 
+                        std::cerr << "Invalid Request Channel <f,q,s>" << std::endl; 
+                        return 1; 
+                    };
 		}
+		break;
+	}
     }
 
     int pid = fork();
@@ -234,9 +249,10 @@ int main(int argc, char * argv[]) {
         cout << "n == " << n << endl;
         cout << "w == " << w << endl;
         cout << "b == " << b << endl;
-        cout << "v == " << VERSION << endl;
+        cout << "v == " << type_of_channel << endl;
 
-        RequestChannel* chan = new RequestChannel("control", ::CLIENT_SIDE);
+	// new RequestChannel("control", ::CLIENT_SIDE);
+        RequestChannel* chan = get_new_channel( type_of_channel, "control", CLIENT_SIDE);
         BoundedBuffer request_buffer(b),
             john_stat_buffer(b/3),
             jane_stat_buffer(b/3),
