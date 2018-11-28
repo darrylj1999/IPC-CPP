@@ -58,7 +58,7 @@ public:
 	/* Write the data to the channel. The function returns the number of characters written
 	 to the channel. */
 
-	string name();
+	virtual string name()=0;
 	/* Returns the name of the request channel. */
 };
 

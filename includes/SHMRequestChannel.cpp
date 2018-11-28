@@ -74,5 +74,5 @@ int SHMRequestChannel::cwrite(string msg) {
 }
 
 std::string SHMRequestChannel::name() {
-	return my_name;
+	return "shm_" + my_name;
 }

@@ -68,5 +68,5 @@ int MQRequestChannel::cwrite(string msg) {
 }
 
 std::string MQRequestChannel::name() {
-	return my_name;
+	return "mq_" + my_name;
 }

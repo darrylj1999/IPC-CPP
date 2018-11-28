@@ -131,7 +131,7 @@ int FIFORequestChannel::cwrite(string msg) {
 }
 
 std::string FIFORequestChannel::name() {
-	return my_name;
+	return "fifo_" + my_name;
 }
 
 

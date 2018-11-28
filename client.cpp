@@ -253,6 +253,7 @@ int main(int argc, char * argv[]) {
 
 	// new RequestChannel("control", ::CLIENT_SIDE);
         RequestChannel* chan = get_new_channel( type_of_channel, "control", CLIENT_SIDE);
+	std::cout << "c == " << chan -> name() << std::endl;
         BoundedBuffer request_buffer(b),
             john_stat_buffer(b/3),
             jane_stat_buffer(b/3),
