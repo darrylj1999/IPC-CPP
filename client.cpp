@@ -13,6 +13,7 @@
 #include <sstream>
 #include <iomanip>
 
+#include <chrono>
 #include <sys/time.h>
 #include <cassert>
 #include <assert.h>
@@ -37,8 +38,8 @@
 #include "Histogram.h"
 using namespace std;
 
-#define VERSION "Shared Memory"
-#define RequestChannel SHMRequestChannel
+#define VERSION "Message Queues"
+#define RequestChannel MQRequestChannel
 
 // Wrapper around request arguments
 struct Request {

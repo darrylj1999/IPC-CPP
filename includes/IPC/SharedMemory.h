@@ -1,13 +1,13 @@
 #ifndef __SHARED_MEMORY_H__
 #define __SHARED_MEMORY_H__
 
-#include "string"
-#include "fcntl.h"
-#include "unistd.h"
+#include <string>
+#include <fcntl.h> 
+#include <string.h>
+#include <unistd.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/types.h>
-#include <iostream>
 #include "KernelSemaphore.h"
 
 // Get (or create) Shared Memory segment

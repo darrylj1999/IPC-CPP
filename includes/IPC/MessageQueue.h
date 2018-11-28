@@ -5,6 +5,7 @@
 #include <string>
 #include <fcntl.h>
 #include <iostream>
+#include <string.h>
 #include <unistd.h>
 #include <sys/msg.h>
 #include <sys/types.h>
@@ -21,13 +22,28 @@
 
 // msgctl(msqid, IPC_RMID, NULL); -> Removes message queue
 
+#define MAX_MESSAGE 255
+
 class MessageQueue {
     // Custom Types
     public:
         typedef std::string DATA_T;
         struct STORAGE_T {
-            long msgtype; 
-            DATA_T data;
+            long mtype; 
+            char mtext[MAX_MESSAGE];
+            STORAGE_T(int type): mtype(type) {};
+            STORAGE_T(int type, DATA_T in):
+                mtype(type)
+            {
+                int sz = in.length();
+                strncpy(mtext, in.c_str(), sz);
+                mtext[sz] = '\0';
+            }
+            DATA_T get() {
+                std::string result(mtext);
+                // memset(mtext, 0, MAX_MESSAGE);
+                return result;
+            }
         };
 
     // Data Members

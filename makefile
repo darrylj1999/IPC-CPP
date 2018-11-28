@@ -42,4 +42,4 @@ bufferTest: testBuffer.cpp BoundedBuffer.o
 	g++ -g -w -Wall -std=c++11 -o bufferTest testBuffer.cpp BoundedBuffer.o -lpthread
 
 clean:
-	rm -rf *.o fifo* sem_* dataserver client *.dSYM/ bufferTest
+	rm -rf *.o fifo* sem_* dataserver client *.dSYM/ bufferTest data*_* sem_* control*

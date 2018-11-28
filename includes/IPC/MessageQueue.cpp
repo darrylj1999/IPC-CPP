@@ -43,7 +43,9 @@ void MessageQueue::send(int msgtype, const MessageQueue::DATA_T data) {
 }
 
 void MessageQueue::send(int msgtype, const MessageQueue::DATA_T data, int msgsize) {
-    STORAGE_T temp { msgtype, data };
+    STORAGE_T temp(msgtype, data);
+    // temp.mtype = msgtype;
+    // strncpy(temp.mtext, data.c_str(), msgsize-1);
     int status = msgsnd(msqid, &temp, msgsize, 0);
     /*
     ERROR("msgsnd");
@@ -51,10 +53,12 @@ void MessageQueue::send(int msgtype, const MessageQueue::DATA_T data, int msgsiz
 }
 
 MessageQueue::DATA_T MessageQueue::recieve(int msgtype) {
-    STORAGE_T temp { msgtype, "" };
+    STORAGE_T temp(msgtype);
+    // temp.mtype = msgtype;
     int status = msgrcv(msqid, &temp, max_size, msgtype, 0);
     /*
     ERROR("msgrcv");
     */
-    return temp.data;
+    std::string result = temp.get();
+    return result;
 }

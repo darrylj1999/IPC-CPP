@@ -41,7 +41,7 @@ void KernelSemaphore::P() {
     sop.sem_op = -1;
     sop.sem_flg = 0;
     int status = semop( semid, &sop, 1 );
-    if (status < 0) ERROR("semop (P)");
+    // if (status < 0) ERROR("semop (P)");
     // val--;
 }
 
@@ -52,7 +52,7 @@ void KernelSemaphore::V() {
     sop.sem_op = 1;
     sop.sem_flg = IPC_NOWAIT;
     int status = semop( semid, &sop, 1 );
-    if (status < 0) ERROR("semop (V)");
+    // if (status < 0) ERROR("semop (V)");
     // val++;
 }
 

@@ -37,6 +37,15 @@
 // int semop(int semid, struct sembuf *sops, unsigned int nsops);
 
 class KernelSemaphore {
+
+    public:
+	union semun {
+            int val;                /* value for SETVAL */
+            struct semid_ds *buf;   /* buffer for IPC_STAT & IPC_SET */
+            ushort *array;          /* array for GETALL & SETALL */
+            struct seminfo *__buf;  /* buffer for IPC_INFO */
+            void *__pad;
+        };
     private:
         /* INTERNAL DATA STRUCTURES */
         int semid, val;
