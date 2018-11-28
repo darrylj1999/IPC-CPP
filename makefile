@@ -4,6 +4,7 @@ FLAGS=-g -w -I -O1 -Wall -std=c++11
 INCLUDE_DIR=./includes
 CHANNEL_OBJS=FIFORequestChannel.o MQRequestChannel.o SHMRequestChannel.o
 IPC_OBJS=KernelSemaphore.o SharedMemory.o MessageQueue.o
+METHOD=SHMREQCHANNEL
 
 all: dataserver client
 
@@ -33,10 +34,10 @@ Histogram.o: Histogram.h Histogram.cpp
 
 
 dataserver: dataserver.cpp ${CHANNEL_OBJS} ${IPC_OBJS}
-	g++ $(FLAGS) -o dataserver dataserver.cpp ${CHANNEL_OBJS} ${IPC_OBJS} -lpthread #-lrt
+	g++ $(FLAGS) -D$(METHOD) -o dataserver dataserver.cpp ${CHANNEL_OBJS} ${IPC_OBJS} -lpthread #-lrt
 
 client: client.cpp ${CHANNEL_OBJS} ${IPC_OBJS} BoundedBuffer.o Histogram.o
-	g++ $(FLAGS) -o client client.cpp ${CHANNEL_OBJS} ${IPC_OBJS} BoundedBuffer.o Histogram.o -lpthread #-lrt
+	g++ $(FLAGS) -D$(METHOD) -o client client.cpp ${CHANNEL_OBJS} ${IPC_OBJS} BoundedBuffer.o Histogram.o -lpthread #-lrt
 
 bufferTest: testBuffer.cpp BoundedBuffer.o
 	g++ -g -w -Wall -std=c++11 -o bufferTest testBuffer.cpp BoundedBuffer.o -lpthread

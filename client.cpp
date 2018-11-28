@@ -38,8 +38,16 @@
 #include "Histogram.h"
 using namespace std;
 
-#define VERSION "Message Queues"
-#define RequestChannel MQRequestChannel
+#ifdef MQREQCHANNEL
+    #define VERSION "Message Queues"
+    #define RequestChannel MQRequestChannel
+#elif defined SHMREQCHANNEL
+    #define VERSION "Shared Memory"
+    #define RequestChannel SHMRequestChannel
+#else
+    #define VERSION "Named Pipes"
+    #define RequestChannel FIFORequestChannel
+#endif
 
 // Wrapper around request arguments
 struct Request {

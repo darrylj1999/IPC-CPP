@@ -41,12 +41,7 @@
 
 MQRequestChannel::MQRequestChannel(const std::string _name, const Side _side) :
 RequestChannel(_name, _side), mq(_name, MAX_MESSAGE, DEFAULT_SEED)
-{
-	/* if (_side == ::SERVER_SIDE) {
-	}
-	else {
-	} */ // I may not need to distinguish between server and client side
-}
+{}
 
 MQRequestChannel::~MQRequestChannel() {
 }
@@ -57,7 +52,6 @@ string MQRequestChannel::cread() {
         result = mq.recieve(2);
     else 
         result = mq.recieve(1);
-    //std::cout << side_name << ' ' <<  my_name << " read " << result << std::endl;
     return result;
 }
 
@@ -70,7 +64,6 @@ int MQRequestChannel::cwrite(string msg) {
         mq.send(1, msg);
     else 
         mq.send(2, msg);
-    //std::cout << side_name << ' ' <<  my_name << " wrote " << msg << std::endl;
     return msg.length() + 1;
 }
 

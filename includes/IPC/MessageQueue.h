@@ -32,6 +32,7 @@ class MessageQueue {
             long mtype; 
             char mtext[MAX_MESSAGE];
             STORAGE_T(int type): mtype(type) {};
+            // Transform string to char*
             STORAGE_T(int type, DATA_T in):
                 mtype(type)
             {
@@ -39,9 +40,9 @@ class MessageQueue {
                 strncpy(mtext, in.c_str(), sz);
                 mtext[sz] = '\0';
             }
+            // Get string from char*
             DATA_T get() {
                 std::string result(mtext);
-                // memset(mtext, 0, MAX_MESSAGE);
                 return result;
             }
         };
