@@ -1,16 +1,15 @@
-CC=g++
-FLAGS=-g -Wall
+FLAGS=-g -std=c++11 -Wall
 
 all: kirk spock
 
-KernelSemaphore.o: KernelSemaphore.cpp KernelSemaphore.h
-	$(CC) $(FLAGS) -c KernelSemaphore.cpp
+MessageQueue.o: MessageQueue.h MessageQueue.cpp
+	g++ $(FLAGS) -c MessageQueue.cpp
 
-SharedMemory.o: SharedMemory.cpp SharedMemory.h
-	$(CC) $(FLAGS) -c SharedMemory.cpp
+kirk: kirk.cpp MessageQueue.o
+	g++ $(FLAGS) kirk.cpp MessageQueue.o -o kirk
 
-kirk: KernelSemaphore.o SharedMemory.o kirk.cpp
-	$(CC) $(FLAGS) kirk.cpp SharedMemory.o KernelSemaphore.o -o kirk
+spock: spock.cpp MessageQueue.o
+	g++ $(FLAGS) spock.cpp MessageQueue.o -o spock
 
-spock: KernelSemaphore.o SharedMemory.o spock.cpp
-	$(CC) $(FLAGS) spock.cpp SharedMemory.o KernelSemaphore.o -o spock
+clean:
+	rm -rf kirk spock MessageQueue.o
