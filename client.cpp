@@ -242,7 +242,7 @@ int main(int argc, char * argv[]) {
 
     int pid = fork();
 	if (pid == 0){
-		execl("dataserver", (char*) NULL);
+		execl("dataserver", std::to_string(type_of_channel).c_str(), (char*) NULL);
 	}
 	else {
 

@@ -83,6 +83,17 @@ void* handle_process_loop (void* _channel) {
 
 
 int main(int argc, char * argv[]) {
+	// Getting first character after input
+	char option = argv[0][0];
+	switch (option) {
+		case '0': { type_of_channel = 0; break; };
+		case '1': { type_of_channel = 1; break; };
+		case '2': { type_of_channel = 2; break; };
+		default: {
+			std::cerr << "Weird Input \'" << option << "\'. Only <0|1|2>" << std::endl;
+			return 1;
+		};
+	}
 	newchannel_lock = PTHREAD_MUTEX_INITIALIZER;
 	// RequestChannel control_channel("control", SERVER_SIDE);
 	RequestChannel* control_channel = get_new_channel( type_of_channel, "control", SERVER_SIDE );
